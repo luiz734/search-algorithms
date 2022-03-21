@@ -25,22 +25,26 @@ def fitness(individual: Individual):
 
 # more fitness => more chances to be selected
 # TODO: make population sorted by fitness
+def wighted_index(weights: list):
+   r = randint(0, sum(weights))
+   w = 0
+   for i in range(len(weights)):
+      w += weights[i]
+      if r < w:
+         return i
+   return len(weights) - 1
+
 def weighted_random_choices(population: list, weights: list, amount: int) -> tuple:
    # weights and amount not used for simplification
-   parent1 = parent2 = None   
+   parents = []
+
    i = 0
-   while parent1 == None:
-      rand_fitness = randint(0, IDEAL_FITNESS)
-      if rand_fitness < fitness(population[i % len(population)]):
-         parent1 = population[i % len(population)]
-      i+=1
-   i = 0
-   while parent2 == None or parent2 is parent1:
-      rand_fitness = randint(0, IDEAL_FITNESS)
-      if rand_fitness < fitness(population[i % len(population)]):
-         parent2= population[i % len(population)]
-      i+=1
-   return parent1, parent2
+   while i < amount:
+      new_parent = population[wighted_index(weights)]
+      if new_parent not in parents:
+         parents.append(new_parent)
+         i += 1
+   return tuple(parents) 
 
 def mutate(child: Individual) -> None:
    random_index = randint(0, len(child.sequence)- 1)
@@ -55,7 +59,7 @@ def best_individual(population: list) -> Individual:
          best = population[i]   
    return best
 
-def fit_enough(population: list) -> Boolean:
+def fit_enough(population: list):
    return fitness(best_individual(population)) == 10
 
 def genetic_algorithm(population: list, fitness: callable) -> tuple:
