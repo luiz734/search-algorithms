@@ -1,5 +1,4 @@
 from random import randint, random
-from xmlrpc.client import Boolean
 
 MUTATION_RATE = 0.02
 IDEAL_FITNESS = 10 # all 10 numbers even/odd
