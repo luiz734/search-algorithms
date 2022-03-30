@@ -7,7 +7,7 @@ from canvas import Canvas
 
 MAX_X = 100
 MAX_Y = 100
-N_CITIES = 15
+N_CITIES = 5
 CITIES = []
 DISTANCE = []
 
@@ -77,18 +77,20 @@ def hill_climbing():
    i = 0
    t = 1
    while True:
-      t -= 1/100
+      # t -= 1/100
       if t <= 0:
          return current
 
-      current.calc_sucessors()
+      current.calc_sucessors() 
       next_state = current.random_sucessor()  
       delta_E = next_state.value - current.value
       
       p = pow(math.e, delta_E/t)
-      if delta_E > 0 or random() < p: 
+      if delta_E > 0:
          current = next_state 
-         
+      elif p > random(): 
+         current = next_state
+
       c.draw(points, current.cities)
       i+=1
 

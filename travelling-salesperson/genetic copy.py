@@ -7,7 +7,7 @@ from canvas import Canvas
 MUTATION_RATE = 0.25
 MAX_X = 100
 MAX_Y = 100
-N_CITIES = 15
+N_CITIES = 25
 POPULATION_SIZE = 100
 canvas = Canvas(MAX_Y, MAX_X, 6)
 generations = 0
@@ -60,6 +60,7 @@ class Individual:
       self.cities[a] = self.cities[b]
       self.cities[b] = tmp
 
+# TODO: check if it works as expected
 def wighted_index(population: list):
    weights = [1/(pow(individual.fitness, 8)+1) for individual in population]
    total = sum(weights)
