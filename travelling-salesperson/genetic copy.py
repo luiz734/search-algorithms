@@ -7,7 +7,7 @@ from canvas import Canvas
 MUTATION_RATE = 0.25
 MAX_X = 100
 MAX_Y = 100
-N_CITIES = 25
+N_CITIES = 30
 POPULATION_SIZE = 100
 canvas = Canvas(MAX_Y, MAX_X, 6)
 generations = 0
