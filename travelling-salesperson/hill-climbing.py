@@ -7,10 +7,13 @@ from canvas import Canvas
 
 MAX_X = 100
 MAX_Y = 100
-N_CITIES = 15
+N_CITIES = 20
 CITIES = []
 DISTANCE = []
-
+DECREASE_RATE = .9999
+MIN_TEMPERATURE = 1
+MAX_TEMPERATURE = 100000
+ 
 class City:
    def __init__(self, x, y) -> None:
       self.x = x
@@ -28,15 +31,6 @@ class State:
          city_index_2 = self.cities[(i + 1) % N_CITIES]
          self.value += DISTANCE[city_index_1][city_index_2]
 
-
-   def calc_sucessors(self):
-      self.sucessors = []
-      for i in range(N_CITIES):
-         for j in range(i+1, N_CITIES):
-            swapped = self._swapped_copy(i, j)
-            self.sucessors.append(swapped)
-      return self.sucessors
-
    def _swapped_copy(self, a, b):
       state_cpy = deepcopy(self)
       state_cpy.cities[a] = self.cities[b]
@@ -45,18 +39,11 @@ class State:
       return state_cpy
 
    def random_sucessor(self):
-      assert self.sucessors
-      return self.sucessors[randint(0, len(self.sucessors) - 1)]
-
-   def highest_valuated(self):
-      assert self.sucessors
-      neighbor = None
-      highest = Infinity
-      for s in range(len(self.sucessors)):
-        if self.sucessors[s].value < highest:
-            highest = self.sucessors[s].value
-            neighbor = self.sucessors[s]
-      return neighbor 
+      rand_index_a = randint(0, len(self.cities) - 1)
+      rand_index_b = randint(0, len(self.cities) - 1)
+      while rand_index_a == rand_index_b:
+         rand_index_b = randint(0, len(self.cities) - 1)
+      return self._swapped_copy(rand_index_a, rand_index_b)
 
 
 for i in range(N_CITIES):
@@ -70,32 +57,32 @@ for i in range(N_CITIES):
       DISTANCE[i].append(distance)
 points = [(p.x, p.y) for p in CITIES]
 
-def hill_climbing():
+def simulated_annealing():
    global points
    current = State([i for i in range(N_CITIES)])
    shuffle(current.cities)
-   i = 0
-   t = 1
+
+   temperature = MAX_TEMPERATURE
+
    while True:
-      t -= 1/100
-      if t <= 0:
+      canvas.get_events()
+      temperature  *= DECREASE_RATE
+      if temperature <= MIN_TEMPERATURE:
          return current
 
-      current.calc_sucessors()
       next_state = current.random_sucessor()  
-      delta_E = next_state.value - current.value
+      delta_E = current.value - next_state.value
       
-      p = pow(math.e, delta_E/t)
-      if delta_E > 0 or random() < p: 
+      p = pow(math.e, delta_E/temperature)
+      if delta_E > 0:
          current = next_state 
-         
-      c.draw(points, current.cities)
-      i+=1
+      elif p > random(): 
+         current = next_state
 
+      canvas.draw(points, current.cities)
+   
 
-
-
-
-
-c = Canvas(MAX_Y, MAX_X, 6)
-hill_climbing()
+canvas = Canvas(MAX_Y, MAX_X, 6)
+simulated_annealing()
+while True:
+   canvas.get_events()
